@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:meal_app/models/meal.dart';
-import 'package:meal_app/screen/meal_detail_screen.dart';
 import 'package:meal_app/widget/meal_item_trait.dart';
 import 'package:transparent_image/transparent_image.dart';
 

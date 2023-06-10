@@ -3,11 +3,8 @@ import 'package:meal_app/models/meal.dart';
 
 class MealDetail extends StatelessWidget {
   const MealDetail(
-      {
-      // required this.onSelectFavorite,
-      super.key,
-      required this.meal});
-  // final void Function(Meal meal) onSelectFavorite;
+      {required this.onSelectFavorite, super.key, required this.meal});
+  final void Function(Meal meal) onSelectFavorite;
 
   final Meal meal;
 
@@ -18,14 +15,7 @@ class MealDetail extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.favorite_border_outlined),
             onPressed: () {
-              // onSelectFavorite(meal);
-              const snackdemo = SnackBar(
-                content: Text('Marked as favourite'),
-                elevation: 10,
-                behavior: SnackBarBehavior.floating,
-                margin: EdgeInsets.all(5),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackdemo);
+              onSelectFavorite(meal);
             },
           ),
         ]),

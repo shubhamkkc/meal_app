@@ -9,7 +9,9 @@ class MealScreen extends StatelessWidget {
       // required this.onSelectFavorite,
       super.key,
       required this.meals,
-      this.title});
+      this.title,
+      required this.onSelectFavorite});
+  final void Function(Meal meal) onSelectFavorite;
 
   // final void Function(Meal meal) onSelectFavorite;
 
@@ -20,7 +22,8 @@ class MealScreen extends StatelessWidget {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => MealDetail(
             // onSelectFavorite: onSelectFavorite,
-            meal: meal)));
+            meal: meal,
+            onSelectFavorite: onSelectFavorite)));
   }
 
   @override
