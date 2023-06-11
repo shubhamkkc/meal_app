@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:meal_app/data/dummy_data.dart';
 import 'package:meal_app/models/meal.dart';
 import 'package:meal_app/screen/categories_screen.dart';
+import 'package:meal_app/screen/filter.dart';
 import 'package:meal_app/screen/main_drawer.dart';
 import 'package:meal_app/screen/meal_screen.dart';
+
+const kInitalFilter = {
+  Filter.glutenFree: false,
+  Filter.lactoseFree: false,
+  Filter.veganFree: false,
+  Filter.vegetrainFree: false,
+};
 
 class Tabs extends StatefulWidget {
   const Tabs({super.key});
@@ -28,7 +37,6 @@ class _TabsState extends State<Tabs> {
   }
 
   void onSelectFavorite(meal) {
-    print(meal);
     if (favoritesMeal.contains(meal)) {
       setState(() {
         favoritesMeal.remove(meal);
@@ -48,20 +56,52 @@ class _TabsState extends State<Tabs> {
     });
   }
 
+  Map<Filter, bool> selectedFilter = {
+    Filter.glutenFree: false,
+    Filter.lactoseFree: false,
+    Filter.veganFree: false,
+    Filter.vegetrainFree: false,
+  };
+
   @override
   Widget build(BuildContext context) {
+    final availabeMeal = dummyMeals.where((Meal meal) {
+      if (selectedFilter[Filter.glutenFree]! && !meal.isGlutenFree) {
+        return false;
+      }
+      if (selectedFilter[Filter.lactoseFree]! && !meal.isLactoseFree) {
+        return false;
+      }
+      if (selectedFilter[Filter.veganFree]! && !meal.isVegan) {
+        return false;
+      }
+      if (selectedFilter[Filter.vegetrainFree]! && !meal.isVegetarian) {
+        return false;
+      }
+      return true;
+    }).toList();
+
     // ignore: non_constant_identifier_names
-    Widget ActivePage = Categories(onSelectFavorite: onSelectFavorite);
+    Widget ActivePage = Categories(
+        onSelectFavorite: onSelectFavorite, availabeMeal: availabeMeal);
     String title = "Categories";
     if (selectIndex == 1) {
       ActivePage =
           MealScreen(meals: favoritesMeal, onSelectFavorite: onSelectFavorite);
       title = "Favorites";
     }
-    void onSelectScreen(String identifer) {
+    void onSelectScreen(String identifer) async {
       if (identifer == 'meal') {
         Navigator.of(context).pop();
-      } else {}
+      } else {
+        final filterResult = await Navigator.of(context)
+            .push<Map<Filter, bool>>(MaterialPageRoute(
+          builder: (context) => FilterScreen(currentFilter: selectedFilter),
+        ));
+        setState(() {
+          selectedFilter = filterResult ?? kInitalFilter;
+        });
+      }
     }
 
     return Scaffold(
