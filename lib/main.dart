@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:meal_app/provider/favrouite_meal_provider.dart';
+import 'package:meal_app/provider/filter_provider.dart';
+import 'package:meal_app/provider/meals_data_provider.dart';
 import 'package:meal_app/screen/tabs.dart';
+import 'package:provider/provider.dart';
 
 final theme = ThemeData(
   useMaterial3: true,
@@ -13,7 +17,17 @@ final theme = ThemeData(
 );
 
 void main() {
-  runApp(const App());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider<MealProvider>(
+      create: (_) => MealProvider(),
+    ),
+    ChangeNotifierProvider<FavrouiteMealProvider>(
+      create: (_) => FavrouiteMealProvider(),
+    ),
+    ChangeNotifierProvider<FilterProvider>(
+      create: (_) => FilterProvider(),
+    )
+  ], child: const App()));
 }
 
 class App extends StatelessWidget {

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-enum Filter {
-  glutenFree,
-  lactoseFree,
-  vegetrainFree,
-  veganFree,
-}
+import '../provider/filter_provider.dart';
 
 class FilterScreen extends StatefulWidget {
-  const FilterScreen({super.key, required this.currentFilter});
-  final Map<Filter, bool> currentFilter;
+  const FilterScreen({super.key
+      // , required this.currentFilter
+      });
+  // final Map<Filter, bool> currentFilter;
 
   @override
   State<FilterScreen> createState() => _FilterScreenState();
@@ -23,11 +21,12 @@ class _FilterScreenState extends State<FilterScreen> {
 
   @override
   void initState() {
-    glutenFreeSet = widget.currentFilter[Filter.glutenFree]!;
-    lactoseFreeSet = widget.currentFilter[Filter.lactoseFree]!;
-    vegetrainFreeSet = widget.currentFilter[Filter.vegetrainFree]!;
-    veganFreeSet = widget.currentFilter[Filter.veganFree]!;
-
+    final activeFilter =
+        Provider.of<FilterProvider>(context, listen: false).filterMeal;
+    glutenFreeSet = activeFilter[Filter.glutenFree]!;
+    lactoseFreeSet = activeFilter[Filter.lactoseFree]!;
+    vegetrainFreeSet = activeFilter[Filter.vegetrainFree]!;
+    veganFreeSet = activeFilter[Filter.veganFree]!;
     super.initState();
   }
 
@@ -35,13 +34,20 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pop({
+        Provider.of<FilterProvider>(context, listen: false).setFilters({
           Filter.glutenFree: glutenFreeSet,
           Filter.lactoseFree: lactoseFreeSet,
           Filter.vegetrainFree: vegetrainFreeSet,
           Filter.veganFree: veganFreeSet
         });
-        return false;
+        // Navigator.of(context).pop({
+        //   Filter.glutenFree: glutenFreeSet,
+        //   Filter.lactoseFree: lactoseFreeSet,
+        //   Filter.vegetrainFree: vegetrainFreeSet,
+        //   Filter.veganFree: veganFreeSet
+        // });
+
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Your Filter')),

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:meal_app/data/dummy_data.dart';
 import 'package:meal_app/models/meal.dart';
+import 'package:meal_app/provider/favrouite_meal_provider.dart';
+import 'package:meal_app/provider/filter_provider.dart';
 import 'package:meal_app/screen/categories_screen.dart';
 import 'package:meal_app/screen/filter.dart';
 import 'package:meal_app/screen/main_drawer.dart';
 import 'package:meal_app/screen/meal_screen.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/meals_data_provider.dart';
 
 const kInitalFilter = {
   Filter.glutenFree: false,
@@ -22,33 +26,20 @@ class Tabs extends StatefulWidget {
 
 class _TabsState extends State<Tabs> {
   int selectIndex = 0;
-  final List<Meal> favoritesMeal = [];
 
-  void showSnackBar(String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    var snackdemo = SnackBar(
-      content: Text(message),
-      elevation: 10,
-      behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.all(5),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackdemo);
-  }
-
-  void onSelectFavorite(meal) {
-    if (favoritesMeal.contains(meal)) {
-      setState(() {
-        favoritesMeal.remove(meal);
-      });
-      showSnackBar("your favourite meal is removed");
-    } else {
-      setState(() {
-        favoritesMeal.add(meal);
-      });
-      showSnackBar("marked as favourite");
-    }
-  }
+  // void onSelectFavorite(meal) {
+  //   if (favoritesMeal.contains(meal)) {
+  //     setState(() {
+  //       favoritesMeal.remove(meal);
+  //     });
+  //     showSnackBar("your favourite meal is removed");
+  //   } else {
+  //     setState(() {
+  //       favoritesMeal.add(meal);
+  //     });
+  //     showSnackBar("marked as favourite");
+  //   }
+  // }
 
   void onItemTap(int index) {
     setState(() {
@@ -56,26 +47,30 @@ class _TabsState extends State<Tabs> {
     });
   }
 
-  Map<Filter, bool> selectedFilter = {
-    Filter.glutenFree: false,
-    Filter.lactoseFree: false,
-    Filter.veganFree: false,
-    Filter.vegetrainFree: false,
-  };
+  // Map<Filter, bool> selectedFilter = {
+  //   Filter.glutenFree: false,
+  //   Filter.lactoseFree: false,
+  //   Filter.veganFree: false,
+  //   Filter.vegetrainFree: false,
+  // };
 
   @override
   Widget build(BuildContext context) {
+    var dummyMeals = context.watch<MealProvider>().availabeMeal;
+    final List<Meal> favoritesMeal =
+        context.watch<FavrouiteMealProvider>().favoritesMeal;
+    final activeFilter = context.watch<FilterProvider>().filterMeal;
     final availabeMeal = dummyMeals.where((Meal meal) {
-      if (selectedFilter[Filter.glutenFree]! && !meal.isGlutenFree) {
+      if (activeFilter[Filter.glutenFree]! && !meal.isGlutenFree) {
         return false;
       }
-      if (selectedFilter[Filter.lactoseFree]! && !meal.isLactoseFree) {
+      if (activeFilter[Filter.lactoseFree]! && !meal.isLactoseFree) {
         return false;
       }
-      if (selectedFilter[Filter.veganFree]! && !meal.isVegan) {
+      if (activeFilter[Filter.veganFree]! && !meal.isVegan) {
         return false;
       }
-      if (selectedFilter[Filter.vegetrainFree]! && !meal.isVegetarian) {
+      if (activeFilter[Filter.vegetrainFree]! && !meal.isVegetarian) {
         return false;
       }
       return true;
@@ -83,24 +78,22 @@ class _TabsState extends State<Tabs> {
 
     // ignore: non_constant_identifier_names
     Widget ActivePage = Categories(
-        onSelectFavorite: onSelectFavorite, availabeMeal: availabeMeal);
+        // onSelectFavorite: onSelectFavorite,
+        availabeMeal: availabeMeal);
     String title = "Categories";
     if (selectIndex == 1) {
-      ActivePage =
-          MealScreen(meals: favoritesMeal, onSelectFavorite: onSelectFavorite);
+      ActivePage = MealScreen(
+        meals: favoritesMeal,
+        //  onSelectFavorite: onSelectFavorite
+      );
       title = "Favorites";
     }
     void onSelectScreen(String identifer) async {
       if (identifer == 'meal') {
         Navigator.of(context).pop();
       } else {
-        final filterResult = await Navigator.of(context)
-            .push<Map<Filter, bool>>(MaterialPageRoute(
-          builder: (context) => FilterScreen(currentFilter: selectedFilter),
-        ));
-        setState(() {
-          selectedFilter = filterResult ?? kInitalFilter;
-        });
+        await Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const FilterScreen()));
       }
     }
 
