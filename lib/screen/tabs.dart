@@ -56,6 +56,7 @@ class _TabsState extends State<Tabs> {
 
   @override
   Widget build(BuildContext context) {
+    print("tabs build");
     var dummyMeals = context.watch<MealProvider>().availabeMeal;
     final List<Meal> favoritesMeal =
         context.watch<FavrouiteMealProvider>().favoritesMeal;

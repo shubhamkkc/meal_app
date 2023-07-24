@@ -17,6 +17,7 @@ class MealDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var favoritesMeal = context.watch<FavrouiteMealProvider>().favoritesMeal;
+    bool isFavorite = favoritesMeal.contains(meal);
     print("metail detail refresh");
 
     void showSnackbar(message) {
@@ -34,7 +35,12 @@ class MealDetail extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: Text(meal.title), actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border_outlined),
+            icon: isFavorite
+                ? const Icon(
+                    Icons.favorite,
+                    color: Colors.red,
+                  )
+                : const Icon(Icons.favorite_border_outlined),
             onPressed: () {
               if (!favoritesMeal.contains(meal)) {
                 bool isMealAdded = context
